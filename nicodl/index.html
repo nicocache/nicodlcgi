@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <title>NicoDl</title>
+    <link rel="stylesheet" type="text/css" href="default.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=yes,initial-scale=1.0" />
+    <script type="text/javascript">
+//<[CDATA[
+var Movies;
+GetMovies(function(){ShowMovies();});
+function GetMovies(callback){
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function()
+  {
+    if( this.readyState == 4 && this.status == 200 )
+    {
+      Movies = this.response;
+      callback();
+    }
+  }
+  xhr.open( 'GET', 'movies.cgi', true );
+  xhr.responseType = 'json';
+  xhr.send( null );
+}
+
+function ShowMovies(){
+  var container=document.getElementById("recorded_container");
+  for(var key in Movies){
+    var div=document.createElement("div");
+    div.setAttribute("class","channel_box");
+
+    var title=document.createElement("h2");
+    title.innerText=Movies[key]["title"];
+    div.appendChild(title);
+
+    for(var key2 in Movies[key]["videos"]){
+      var video=Movies[key]["videos"][key2];
+      var a=document.createElement("a");
+      a.href=video["play"];
+      a.innerText=video["title"];
+      div.appendChild(a);
+
+      var br=document.createElement("br");
+      div.appendChild(br);
+    }
+    container.appendChild(div);
+  }
+}
+
+//]]>
+</script>
+  </head>
+  <body>
+     <h1>録画済み</h1>
+     <div id="recorded_container">
+     </div>
+     <h1>録画予約</h1>
+     <div class="form_add">
+       <form action="modify.cgi" method="post">
+        <input type="input" name="url" value="http://www.nicovideo.jp/mylist/..." size=40 />
+        <input type="hidden" name="op" value="add" />
+        <input type="submit" value="追加" />
+      </form>
+     </div>
+  </body>
+</html>
